@@ -233,7 +233,7 @@ void CLAS12PPipPimReader(){
   //chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_50*");
 //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5046*");
 //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5051*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5117*");
+  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5117*");
 //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5124*");
 //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5424*");
 //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5425*");
@@ -241,7 +241,7 @@ void CLAS12PPipPimReader(){
 //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5429*");
 //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5430*");
 //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass1Initial/skim2_*");
-  chain.Add("/project/Gruppo3/fiber7/cmullen/ServiceWork/pass0v1_1.1.9/rec*");
+//  chain.Add("/project/Gruppo3/fiber7/cmullen/ServiceWork/pass0v1_1.1.9/rec*");
   //get the hipo data
   //   reader.open(inputFile.Data());
   auto files=chain.GetListOfFiles();
@@ -282,8 +282,11 @@ void CLAS12PPipPimReader(){
   	for(Int_t j=0; j<protons.size(); j++) {    
 
 //	if(protons[j]->getRegion()>3999 ) {
+	if(protons[j]->getRegion()==CD ) {  //gives region of 3000 which should be FD+FT(it has changed to 3k=cd see clas12defs.h)
+//	if(protons[j]->getRegion()==FD ) {  //gives region of 2000 which should be FD so fine (also gives majority of events)
+	if(electrons[0]->getRegion()==FT ) {  
 //	if(protons[j]->getStatus()>3999 ) {
-//	if(electrons[0]->getRegion()<3000 && pips[0]->getRegion()<3000 && pims[0]->getRegion()<3000){
+//	if(electrons[0]->getRegion()==FT && pips[0]->getRegion()<3000 && pims[0]->getRegion()<3000){
 
 	// set the particle momentum
 	SetLorentzVector(el,electrons[0]);
@@ -291,7 +294,7 @@ void CLAS12PPipPimReader(){
 	SetLorentzVector(pip,pips[0]);
 	SetLorentzVector(pim,pims[0]);
 	
-cout <<protons[j]->getRegion()<<"    " << "    " << protons[j]->getSector()<<endl;
+cout <<protons[j]->getRegion()<<"    " << "    " << protons[j]->getSector()<<"   "<< electrons[0]->getRegion()<<endl;
 
 	ElectronP = el.P();
 	ElectronTheta = el.Theta();
@@ -379,9 +382,9 @@ cout <<protons[j]->getRegion()<<"    " << "    " << protons[j]->getSector()<<end
 
 			}
 
-//		}
+		}
 
-  //    }
+      }
     
        
       counter++;
