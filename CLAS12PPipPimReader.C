@@ -46,7 +46,7 @@ void CLAS12PPipPimReader(){
 
 
   /////////////////////////////////////
-  TFile *outputFile = new TFile("/project/Gruppo3/fiber7/cmullen/ServiceWork/output/FirstRun.root","recreate");
+  TFile *outputFile = new TFile("/project/Gruppo3/fiber7/cmullen/ServiceWork/output/First7RecFilesWithPionsInFDorFT.root","recreate");
   /////////////////////////////////////
 
   /////////////////////////////////////////////
@@ -77,7 +77,7 @@ void CLAS12PPipPimReader(){
   treeVars->Branch("ElectronSector",&ElectronSector);
   //treeVars->Branch("ElectronStatus",&ElectronStatus);
   treeVars->Branch("RFTime",&RFTime);
-  treeVars->Branch("ElectronStartTimeFromREC",&ElectronStartTimeFromREC); //Peak at 110 and 83 (27diff)
+  treeVars->Branch("ElectronStartTimeFromREC",&ElectronStartTimeFromREC); 
   treeVars->Branch("ElectronShiftedTime",&ElectronShiftedTime);
   treeVars->Branch("NElectrons",&NElectrons);
 
@@ -182,6 +182,10 @@ void CLAS12PPipPimReader(){
   Double_t  MissMassEPrPipX2;
   Double_t  MissMassEPrPimX;
   Double_t  MissMassEPrPimX2;
+ 
+  Double_t  PhiDifferenceProton;
+  Double_t  ThetaDifferenceProton;
+  Double_t  MomentumDifferenceProton;
 
 
   treeVars->Branch("MissMass2",&MissMass2);
@@ -204,44 +208,17 @@ void CLAS12PPipPimReader(){
   treeVars->Branch("ReconProtonPhi",&ReconProtonPhi);
   treeVars->Branch("ReconProtonTheta",&ReconProtonTheta);
   treeVars->Branch("ReconProtonMom",&ReconProtonMom);
-  //  treeVars->Branch("Coplanarity",&Coplanarity);
-  //  treeVars->Branch("ConeAngle",&ConeAngle);
+  treeVars->Branch("PhiDifferenceProton",&PhiDifferenceProton);
+  treeVars->Branch("ThetaDifferenceProton",&ThetaDifferenceProton);
+  treeVars->Branch("MomentumDifferenceProton",&MomentumDifferenceProton);
   //  treeVars->Branch("ScElE",&ScElE);//Scattered Electron Energy
   //  treeVars->Branch("UID",&UID);//Unique ID for (sub)event
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   ////////////////////////////////////////////
 
   TChain chain;
-  //  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5038*");
-  //chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_50*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5046*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5051*");
-  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5117*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5124*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5424*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5425*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5428*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5429*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass0/skim2_5430*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/pass1Initial/skim2_*");
-//  chain.Add("/project/Gruppo3/fiber7/cmullen/ServiceWork/pass0v1_1.1.9/rec*");
+  chain.Add("/project/Gruppo3/fiber7/cmullen/ServiceWork/pass0v1_1.1.9/rec*");
+  //  chain.Add("/project/Gruppo3/fiber7/cmullen/ServiceWork/pass0v1_1.1.9/skim*");
   //get the hipo data
   //   reader.open(inputFile.Data());
   auto files=chain.GetListOfFiles();
@@ -276,113 +253,116 @@ void CLAS12PPipPimReader(){
       auto pips=c12.getByID(211);
       auto pims=c12.getByID(-211);
 
-     // if(electrons.size()==1 && pips.size()==1 && pims.size()==1 && protons.size()>0){
+      // if(electrons.size()==1 && pips.size()==1 && pims.size()==1 && protons.size()>0){
       if(electrons.size()>0 && pips.size()>0 && pims.size()>0&& protons.size()>0){
-      //if(electrons.size()>0 && gammas.size()>1 && protons.size()>0){
+	//if(electrons.size()>0 && gammas.size()>1 && protons.size()>0){
   	for(Int_t j=0; j<protons.size(); j++) {    
+	  if(protons[j]->getRegion()==CD ) {  
+	    if(electrons[0]->getRegion()==FT ) {  
+	      if(pips[0]->getRegion()==FD ) {  
+		if(pims[0]->getRegion()==FD ) {  
 
-//	if(protons[j]->getRegion()>3999 ) {
-	if(protons[j]->getRegion()==CD ) {  //gives region of 3000 which should be FD+FT(it has changed to 3k=cd see clas12defs.h)
-//	if(protons[j]->getRegion()==FD ) {  //gives region of 2000 which should be FD so fine (also gives majority of events)
-	if(electrons[0]->getRegion()==FT ) {  
-//	if(protons[j]->getStatus()>3999 ) {
-//	if(electrons[0]->getRegion()==FT && pips[0]->getRegion()<3000 && pims[0]->getRegion()<3000){
-
-	// set the particle momentum
-	SetLorentzVector(el,electrons[0]);
-	SetLorentzVector(pr,protons[j]);  //Need loop for these
-	SetLorentzVector(pip,pips[0]);
-	SetLorentzVector(pim,pims[0]);
+		  // set the particle momentum
+		  SetLorentzVector(el,electrons[0]);
+		  SetLorentzVector(pr,protons[j]);  //Need loop for these
+		  SetLorentzVector(pip,pips[0]);
+		  SetLorentzVector(pim,pims[0]);
 	
-cout <<protons[j]->getRegion()<<"    " << "    " << protons[j]->getSector()<<"   "<< electrons[0]->getRegion()<<endl;
 
-	ElectronP = el.P();
-	ElectronTheta = el.Theta();
-	ElectronPhi = el.Phi();
-	ElectronTime = electrons[0]->getTime();
-	ElectronEdep = electrons[0]->getDetEnergy();
-	ElectronDeltaE = electrons[0]->getDeltaEnergy();
-	ElectronRegion = electrons[0]->getRegion();
-	ElectronSector = electrons[0]->getSector();
-	//	ElectronStatus = el.P();
-        RFTime = c12.event()->getRFTime() ;
-	ElectronStartTimeFromREC = c12.event()->getStartTime();
-	NElectrons = electrons.size();
-
-
-	ProtonP = pr.P();
-	ProtonTheta = pr.Theta();
-	ProtonPhi = pr.Phi();
-	ProtonTime = protons[j]->getTime();
-	ProtonEdep = protons[j]->getDetEnergy();
-	ProtonDeltaE = protons[j]->getDeltaEnergy();
-	ProtonRegion = protons[j]->getRegion();
-	ProtonSector = protons[j]->getSector();
-	//	ProtonStatus = pr.P();
-        NProtons = protons.size();
-
-	PipP = pip.P();
-	PipTheta = pip.Theta();
-	PipPhi = pip.Phi();
-	PipTime = pips[0]->getTime();
-	PipEdep = pips[0]->getDetEnergy();
-	PipDeltaE = pips[0]->getDeltaEnergy();
-	PipRegion = pips[0]->getRegion();
-	PipSector = pips[0]->getSector();
-	//	ProtonStatus = pr.P();
-        NPips = pips.size();
+		  ElectronP = el.P();
+		  ElectronTheta = el.Theta();
+		  ElectronPhi = el.Phi();
+		  ElectronTime = electrons[0]->getTime();
+		  ElectronEdep = electrons[0]->getDetEnergy();
+		  ElectronDeltaE = electrons[0]->getDeltaEnergy();
+		  ElectronRegion = electrons[0]->getRegion();
+		  ElectronSector = electrons[0]->getSector();
+		  //	ElectronStatus = el.P();
+		  RFTime = c12.event()->getRFTime() ;
+		  ElectronStartTimeFromREC = c12.event()->getStartTime();
+		  NElectrons = electrons.size();
 
 
-	PimP = pim.P();
-	PimTheta = pim.Theta();
-	PimPhi = pim.Phi();
-	PimTime = pims[0]->getTime();
-	PimEdep = pims[0]->getDetEnergy();
-	PimDeltaE = pims[0]->getDeltaEnergy();
-	PimRegion = pims[0]->getRegion();
-	PimSector = pims[0]->getSector();
-	//	ProtonStatus = pr.P();
-        NPims = pims.size();
+		  ProtonP = pr.P();
+		  ProtonTheta = pr.Theta();
+		  ProtonPhi = pr.Phi();
+		  ProtonTime = protons[j]->getTime();
+		  ProtonEdep = protons[j]->getDetEnergy();
+		  ProtonDeltaE = protons[j]->getDeltaEnergy();
+		  ProtonRegion = protons[j]->getRegion();
+		  ProtonSector = protons[j]->getSector();
+		  //	ProtonStatus = pr.P();
+		  NProtons = protons.size();
+
+		  PipP = pip.P();
+		  PipTheta = pip.Theta();
+		  PipPhi = pip.Phi();
+		  PipTime = pips[0]->getTime();
+		  PipEdep = pips[0]->getDetEnergy();
+		  PipDeltaE = pips[0]->getDeltaEnergy();
+		  PipRegion = pips[0]->getRegion();
+		  PipSector = pips[0]->getSector();
+		  //	ProtonStatus = pr.P();
+		  NPips = pips.size();
 
 
-	TLorentzVector Tmiss = beam + target - el - pr - pip -pim;
-	TLorentzVector TReconProton = beam + target -el -pip -pim;
-	TLorentzVector TmissEPrX = beam + target -el -pr;             
-	TLorentzVector TmissEPimX = beam + target - el -pim; 
-	TLorentzVector TmissEPipX = beam+target-el-pip;
-	TLorentzVector TmissEPrPipX = beam+ target -el -pr - pip;
-	TLorentzVector TmissEPrPimX = beam +target - el -pr - pim;
+		  PimP = pim.P();
+		  PimTheta = pim.Theta();
+		  PimPhi = pim.Phi();
+		  PimTime = pims[0]->getTime();
+		  PimEdep = pims[0]->getDetEnergy();
+		  PimDeltaE = pims[0]->getDeltaEnergy();
+		  PimRegion = pims[0]->getRegion();
+		  PimSector = pims[0]->getSector();
+		  //	ProtonStatus = pr.P();
+		  NPims = pims.size();
 
 
-	MissMom = Tmiss.P();
-	MissEnergy = Tmiss.E();
-	MissMass =  Tmiss.M();
-	MissMass2 = Tmiss.M2();
-	MissMassEPipPimX = TReconProton.M();
-	MissMassEPipPimX2 = TReconProton.M2();
-	MissMassEPrX = TmissEPrX.M();
-	MissMassEPrX2 = TmissEPrX.M2() ;
-	MissMassEPimX = TmissEPimX.M();
-	MissMassEPimX2 = TmissEPimX.M2();
-	MissMassEPipX = TmissEPipX.M();
-	MissMassEPipX2 = TmissEPipX.M2();
-	MissMassEPrPipX = TmissEPrPipX.M();
-	MissMassEPrPipX2 = TmissEPrPipX.M2();
-	MissMassEPrPimX = TmissEPrPimX.M();
-	MissMassEPrPimX2 = TmissEPrPimX.M2();
+		  TLorentzVector Tmiss = beam + target - el - pr - pip -pim;
+		  TLorentzVector TReconProton = beam + target -el -pip -pim;
+		  TLorentzVector TmissEPrX = beam + target -el -pr;             
+		  TLorentzVector TmissEPimX = beam + target - el -pim; 
+		  TLorentzVector TmissEPipX = beam+target-el-pip;
+		  TLorentzVector TmissEPrPipX = beam+ target -el -pr - pip;
+		  TLorentzVector TmissEPrPimX = beam +target - el -pr - pim;
 
-	ReconProtonPhi = TReconProton.Phi();
-	ReconProtonTheta = TReconProton.Theta();
-	ReconProtonMom = TReconProton.P();
 
-	///////////////////////////////////////////////////////////////////////////////////////////////
+		  MissMom = Tmiss.P();
+		  MissEnergy = Tmiss.E();
+		  MissMass =  Tmiss.M();
+		  MissMass2 = Tmiss.M2();
+		  MissMassEPipPimX = TReconProton.M();
+		  MissMassEPipPimX2 = TReconProton.M2();
+		  MissMassEPrX = TmissEPrX.M();
+		  MissMassEPrX2 = TmissEPrX.M2() ;
+		  MissMassEPimX = TmissEPimX.M();
+		  MissMassEPimX2 = TmissEPimX.M2();
+		  MissMassEPipX = TmissEPipX.M();
+		  MissMassEPipX2 = TmissEPipX.M2();
+		  MissMassEPrPipX = TmissEPrPipX.M();
+		  MissMassEPrPipX2 = TmissEPrPipX.M2();
+		  MissMassEPrPimX = TmissEPrPimX.M();
+		  MissMassEPrPimX2 = TmissEPrPimX.M2();
 
-	treeVars->Fill();
-				}
+		  ReconProtonPhi = TReconProton.Phi();
+		  ReconProtonTheta = TReconProton.Theta();
+		  ReconProtonMom = TReconProton.P();
 
-			}
+		  ThetaDifferenceProton = ReconProtonTheta - ProtonTheta;
+		  PhiDifferenceProton = ReconProtonPhi - ProtonPhi;
+		  MomentumDifferenceProton = ReconProtonMom - ProtonP;
 
+
+		  ///////////////////////////////////////////////////////////////////////////////////////////////
+
+		  treeVars->Fill();
 		}
+	      }
+	    }
+
+	  }
+
+	}
 
       }
     
