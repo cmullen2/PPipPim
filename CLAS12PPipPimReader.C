@@ -46,7 +46,7 @@ void CLAS12PPipPimReader(){
 
 
   /////////////////////////////////////
-  TFile *outputFile = new TFile("/project/Gruppo3/fiber7/cmullen/ServiceWork/output/First7RecFilesWithPionsInFDorFT.root","recreate");
+  TFile *outputFile = new TFile("/project/Gruppo3/fiber7/cmullen/ServiceWork/output/First7RecFilesWithPionsInFDV3.root","recreate");
   /////////////////////////////////////
 
   /////////////////////////////////////////////
@@ -66,6 +66,8 @@ void CLAS12PPipPimReader(){
   Double_t RFTime;
   Double_t ElectronShiftedTime;
   Double_t NElectrons;
+  Double_t Electron_Energy;
+
 
   treeVars->Branch("ElectronP",&ElectronP);
   treeVars->Branch("ElectronTheta",&ElectronTheta);
@@ -80,6 +82,7 @@ void CLAS12PPipPimReader(){
   treeVars->Branch("ElectronStartTimeFromREC",&ElectronStartTimeFromREC); 
   treeVars->Branch("ElectronShiftedTime",&ElectronShiftedTime);
   treeVars->Branch("NElectrons",&NElectrons);
+  treeVars->Branch("Electron_Energy",&Electron_Energy);
 
   ////PROTON
   Double_t ProtonP;
@@ -281,6 +284,8 @@ void CLAS12PPipPimReader(){
 		  RFTime = c12.event()->getRFTime() ;
 		  ElectronStartTimeFromREC = c12.event()->getStartTime();
 		  NElectrons = electrons.size();
+		el.SetE(ElectronEdep + 0.05);
+		 Electron_Energy = el.E();
 
 
 		  ProtonP = pr.P();
